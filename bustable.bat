@@ -1,0 +1,1 @@
+java -Dfile.encoding=utf-8 -jar MultiDataConvert-1.0-SNAPSHOT-jar-with-dependencies.jar bustable -s data\stop2015.csv.bak -r data\route_xjy.csv.bak -n data\name.csv -c data\id.csv.bak 
