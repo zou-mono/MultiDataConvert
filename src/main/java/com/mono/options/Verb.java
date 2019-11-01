@@ -1,9 +1,6 @@
 package com.mono.options;
 
-import com.mono.dataConvert.BusSched;
-import com.mono.dataConvert.BusTable;
-import com.mono.dataConvert.FCD;
-import com.mono.dataConvert.VI;
+import com.mono.dataConvert.*;
 import net.sourceforge.argparse4j.inf.Subparser;
 import net.sourceforge.argparse4j.inf.Subparsers;
 
@@ -19,6 +16,7 @@ public class Verb {
         setVerbConvertBustable();
         setVerbConvertFCD();
         setVerbConvertBusSchedule();
+        setVerbConvertMetroCard();
         return _subparsers;
     }
 
@@ -98,5 +96,20 @@ public class Verb {
         verbConvert.addArgument("-o","--output")
                 .help("Output directory to be stored result files. The default is in current directory and the name is busSchedule_convert_result.")
                 .setDefault("busSchedule_convert_result");
+    }
+
+    private static void setVerbConvertMetroCard(){
+        Subparser verbConvert = _subparsers.addParser("metroCard")
+                .setDefault("func", new MetroCard())
+                .help("将包含二维码的新轨道刷卡数据转换成旧格式.");
+        verbConvert.addArgument("-i","--input")
+                .help("Input data are about to be preprocessed. If it is file, should contain suffix name. Required.")
+                .required(true);
+        verbConvert.addArgument("-n","--maxThread")
+                .help("Set the maximum count of running thread.")
+                .type(int.class)
+                .setDefault(1);
+        verbConvert.addArgument("-o","--output")
+                .help("Output file path. The default is in current directory and the name is input file name + \"_converted\".");
     }
 }
