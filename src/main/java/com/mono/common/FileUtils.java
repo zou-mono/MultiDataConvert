@@ -22,6 +22,22 @@ import java.util.regex.Pattern;
  */
 public class FileUtils  {
     public List<File> resultFileName;
+    private String sDeepestFolder = "";
+    private static String fileSep = Matcher.quoteReplacement(File.separator);
+
+    //寻找当前目录的最深一级子目录
+    public String deepestFolder(File file){
+        File[] files = file.listFiles();
+        for (File f : files) {
+            if (f.isDirectory()) {// 判断是否文件夹
+                //resultFileName.add(f.getPath());
+                sDeepestFolder = f.getPath();
+                deepestFolder(f);// 调用自身,查找子目录
+            } else
+                return sDeepestFolder;
+        }
+        return sDeepestFolder;
+    }
 
     public List<File> readlist(String path){
         resultFileName = new ArrayList();//建立ArrayList对象
@@ -96,7 +112,7 @@ public class FileUtils  {
         try{
             file = Paths.get(input);
             if (!Files.isRegularFile(file)) {
-                input = Files.isDirectory(file) ? input : StringUtils.join(currentDirectory, "\\", input);
+                input = Files.isDirectory(file) ? input : StringUtils.join(currentDirectory, fileSep, input);
             }
             file = new File(input).toPath();
             if (!Files.exists(file))

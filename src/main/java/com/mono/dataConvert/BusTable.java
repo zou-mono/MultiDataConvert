@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * Created by mono-office on 2017/2/28.
@@ -42,6 +43,7 @@ public class BusTable implements IDataPreprocessing{
     private HashMap<String,BusStop> _bsDic = null;
     private List<BusRoute> _brArray = null;
 
+    private static String fileSep = Matcher.quoteReplacement(File.separator);
 
     @Override
     public boolean init(Namespace ns) {
@@ -56,27 +58,27 @@ public class BusTable implements IDataPreprocessing{
             _outDirectory = ns.get("output");
 
             if(_StopFile == null) throw new Exception("Error: 先进院公交站点表缺失!");
-            if(!Paths.get(_StopFile).isAbsolute()) _StopFile = StringUtils.join(_CurrentDirectory, "\\", _StopFile);
+            if(!Paths.get(_StopFile).isAbsolute()) _StopFile = StringUtils.join(_CurrentDirectory, fileSep, _StopFile);
             file = Paths.get(_StopFile);
             if (!Files.exists(file)) throw new Exception("Error: 先进院公交站点表缺失!");
 
             if(_RouteFile == null) throw new Exception("Error: 先进院公交线路表缺失!");
-            if(!Paths.get(_RouteFile).isAbsolute()) _RouteFile = StringUtils.join(_CurrentDirectory, "\\", _RouteFile);
+            if(!Paths.get(_RouteFile).isAbsolute()) _RouteFile = StringUtils.join(_CurrentDirectory, fileSep, _RouteFile);
             file = Paths.get(_RouteFile);
             if (!Files.exists(file)) throw new Exception("Error: 先进院公交线路表缺失!");
 
             if(_IDFile == null) throw new Exception("Error: 先进院站点ID对应表缺失!");
-            if(!Paths.get(_IDFile).isAbsolute()) _IDFile = StringUtils.join(_CurrentDirectory, "\\", _IDFile);
+            if(!Paths.get(_IDFile).isAbsolute()) _IDFile = StringUtils.join(_CurrentDirectory, fileSep, _IDFile);
             file = Paths.get(_IDFile);
             if (!Files.exists(file)) throw new Exception("Error: 先进院站点ID对应表缺失!");
 
             if(_NameFile == null) throw new Exception("Error: 先进院线路ID和名称对应表缺失!");
-            if(!Paths.get(_NameFile).isAbsolute()) _NameFile = StringUtils.join(_CurrentDirectory, "\\", _NameFile);
+            if(!Paths.get(_NameFile).isAbsolute()) _NameFile = StringUtils.join(_CurrentDirectory, fileSep, _NameFile);
             file = Paths.get(_NameFile);
             if (!Files.exists(file)) throw new Exception("Error: 先进院线路ID和名称对应表缺失!");
 
             file = Paths.get(_outDirectory);
-            if(!file.isAbsolute()) _outDirectory = StringUtils.join(_CurrentDirectory, "\\", _outDirectory);
+            if(!file.isAbsolute()) _outDirectory = StringUtils.join(_CurrentDirectory, fileSep, _outDirectory);
 
             file = Paths.get(_outDirectory);
             if (!Files.exists(file)) {
@@ -255,8 +257,8 @@ public class BusTable implements IDataPreprocessing{
         String current_routeID=""; int current_dir=0; List<BusRoute> current_route=null;
 
         try{
-            String out_file = _outDirectory + "\\" + "公交线路站点顺序描述表.csv";
-            String out_file2 = _outDirectory + "\\" + "公交线路站点顺序表.csv";
+            String out_file = _outDirectory + fileSep + "公交线路站点顺序描述表.csv";
+            String out_file2 = _outDirectory + fileSep + "公交线路站点顺序表.csv";
             Writer writer = new OutputStreamWriter(new FileOutputStream(out_file, false), "GB2312");
             Writer writer2 = new OutputStreamWriter(new FileOutputStream(out_file2, false), "GB2312");
             BufferedWriter bw = new BufferedWriter(writer);

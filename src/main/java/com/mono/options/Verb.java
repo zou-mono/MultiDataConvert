@@ -17,6 +17,7 @@ public class Verb {
         setVerbConvertFCD();
         setVerbConvertBusSchedule();
         setVerbConvertMetroCard();
+        setVerbConvertTaxi();
         return _subparsers;
     }
 
@@ -114,7 +115,7 @@ public class Verb {
 
     private static void setVerbConvertTaxi(){
         Subparser verbConvert = _subparsers.addParser("Taxi")
-                .setDefault("func", new FCD())
+                .setDefault("func", new Taxi())
                 .help("将2017年四月开始的新格式原始GPS数据转换为仿真二期车速计算输入格式.");
         verbConvert.addArgument("-i","--input")
                 .help("Input data are about to be preprocessed. It can be file or directory.")

@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
 
 /**
  * Created by mono-office on 2017/1/20.
@@ -38,6 +39,8 @@ public class VI implements IDataPreprocessing{
     private static int _maxThread;
     private ICsvBeanWriter _CsvWriter;
     private Lock _locker =new ReentrantLock();
+
+    private static String fileSep = Matcher.quoteReplacement(File.separator);
 
     public VI(){
 
@@ -58,12 +61,12 @@ public class VI implements IDataPreprocessing{
 //            if(!Files.exists(file)) Files.createDirectory(file);
 
             file = Paths.get(_dataDirectory);
-            _dataDirectory = Files.isDirectory(file) ? _dataDirectory : StringUtils.join(_CurrentDirectory, "\\", _dataDirectory);
+            _dataDirectory = Files.isDirectory(file) ? _dataDirectory : StringUtils.join(_CurrentDirectory, fileSep, _dataDirectory);
             file = new File(_dataDirectory).toPath();
             if (!Files.exists(file)) throw new Exception("Error: input data is not exist!");
 
             file = Paths.get(_outFile);
-            if(!file.isAbsolute()) _outFile = StringUtils.join(_CurrentDirectory, "\\" + _outFile, ".txt");
+            if(!file.isAbsolute()) _outFile = StringUtils.join(_CurrentDirectory, fileSep + _outFile, ".txt");
 
             file = Paths.get(_outFile);
             if (!Files.exists(file)) {

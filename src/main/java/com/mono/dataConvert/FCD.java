@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
 
 import static com.mono.common.FileUtils.completeZero;
 import static com.mono.common.FileUtils.findFirstCharPos;
@@ -35,15 +36,17 @@ import static com.mono.common.FileUtils.findFirstCharPos;
  */
 public class FCD implements IDataPreprocessing{
     private static final Logger logger = LogManager.getLogger(FCD.class.getName());
-    private static String _CurrentDirectory = System.getProperty("user.dir"); //程序当前运行的路径
-    private static String _dataDirectory = null; //输入数据目录
-    private static String _lpFile = null; //车牌文件名称
-    private static String _outDirectory = null; //输出数据目录
-    private static int _maxThread;
-    private HashSet<String> _lpDics = null;
-    private String _date = null;
+    protected static String _CurrentDirectory = System.getProperty("user.dir"); //程序当前运行的路径
+    protected static String _dataDirectory = null; //输入数据目录
+    protected static String _lpFile = null; //车牌文件名称
+    protected static String _outDirectory = null; //输出数据目录
+    protected static int _maxThread;
+    protected HashSet<String> _lpDics = null;
+    protected String _date = null;
     private ICsvBeanWriter[] _bwList = null;
     private Lock _locker =new ReentrantLock();
+
+    private static String fileSep = Matcher.quoteReplacement(File.separator);
 
     public FCD(){
 
@@ -87,13 +90,13 @@ public class FCD implements IDataPreprocessing{
 //            if (!Files.exists(file)) Files.createDirectory(file);
 
             file = Paths.get(_dataDirectory);
-            _dataDirectory = Files.isDirectory(file) ? _dataDirectory : StringUtils.join(_CurrentDirectory, "\\", _dataDirectory);
+            _dataDirectory = Files.isDirectory(file) ? _dataDirectory : StringUtils.join(_CurrentDirectory, fileSep, _dataDirectory);
             file = new File(_dataDirectory).toPath();
             if (!Files.exists(file)) throw new Exception("Error: input data is not exist!");
 
             if (!(_lpFile == null)) {
                 file = Paths.get(_lpFile);
-                _lpFile = Files.isRegularFile(file) ? _lpFile : StringUtils.join(_CurrentDirectory, "\\", _lpFile);
+                _lpFile = Files.isRegularFile(file) ? _lpFile : StringUtils.join(_CurrentDirectory, fileSep, _lpFile);
                 file = Paths.get(_lpFile);
                 if (!Files.exists(file)) throw new Exception("Error: input lpFile is not exist!");
             }
@@ -102,7 +105,7 @@ public class FCD implements IDataPreprocessing{
             _date = file.getFileName().toString();
             if (!file.isAbsolute()) {
                 //_date = file.getFileName().toString();
-                _outDirectory = StringUtils.join(_CurrentDirectory, "\\" +_date);
+                _outDirectory = StringUtils.join(_CurrentDirectory, fileSep, _date);
             }
 
             file = Paths.get(_outDirectory);
@@ -119,7 +122,7 @@ public class FCD implements IDataPreprocessing{
     }
 
     //创建288个保存输出结果的文件，文件名格式为GPS_yyyymmdd_001.txt
-    private void CreateOutputFiles() throws IOException {
+    protected void CreateOutputFiles() throws IOException {
         _bwList = new ICsvBeanWriter[288];
 
         for(int i =1; i<= 288; i++){
@@ -132,7 +135,7 @@ public class FCD implements IDataPreprocessing{
                 sOrder = String.valueOf(i);
             }
 
-            String output_name = _outDirectory + "\\GPS_" + _date + "_" + sOrder + ".txt";
+            String output_name = _outDirectory + fileSep + "GPS_" + _date + "_" + sOrder + ".txt";
 
             Path file; BufferedWriter bw;
             file = Paths.get(output_name);
@@ -343,7 +346,7 @@ public class FCD implements IDataPreprocessing{
                 "Longitude", "Latitude", "Speed", "Direction", "State", "valid"};
 
         try {
-            //String out_file = _outDirectory + "\\" + file + ".csv";
+            //String out_file = _outDirectory + Matcher.quoteReplacement(File.separator) + file + ".csv";
             for (final GPS gps : GpsArray) {
                 int ts = gps.getTime().getMinuteOfDay();
                 CsvWriter = _bwList[(int) Math.floor(ts / 5)];

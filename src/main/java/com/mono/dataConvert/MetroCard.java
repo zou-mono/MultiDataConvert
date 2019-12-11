@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
 
 public class MetroCard implements IDataPreprocessing {
     private static final Logger logger = LogManager.getLogger(MetroCard.class.getName());
@@ -34,6 +35,8 @@ public class MetroCard implements IDataPreprocessing {
     private String _oOutName; //旧刷卡数据转换后的文件名称
     private ICsvBeanWriter _CsvWriter; //最终合并的文件
     private static CsvPreference _csvDelimited; //分隔符
+
+    private static String fileSep = Matcher.quoteReplacement(File.separator);
 
     @Override
     public boolean init(Namespace ns) {
@@ -68,7 +71,7 @@ public class MetroCard implements IDataPreprocessing {
                 }
                 inputNoSuffix = FileUtils.getNoSuffix(_ninput);
 
-                _nOutName = StringUtils.join(_CurrentDirectory, "\\convered_", inputNoSuffix, suffix);
+                _nOutName = StringUtils.join(_CurrentDirectory, fileSep, "convered_", inputNoSuffix, suffix);
             }
 
             if(_oinput != null){
@@ -81,17 +84,17 @@ public class MetroCard implements IDataPreprocessing {
                 }
                 inputNoSuffix = FileUtils.getNoSuffix(_oinput);
 
-                _oOutName = StringUtils.join(_CurrentDirectory, "\\convered_", inputNoSuffix, suffix);
+                _oOutName = StringUtils.join(_CurrentDirectory, fileSep, "convered_", inputNoSuffix, suffix);
             }
 
 //            String inputName = file.getFileName().toString();
 //            String inputNoSuffix = inputName.substring(0, inputName.lastIndexOf("."));
             Path file = Paths.get(_outputPath);
             if (_outputPath == null)
-                _outputPath = StringUtils.join(_CurrentDirectory, "\\converted", suffix);
+                _outputPath = StringUtils.join(_CurrentDirectory, fileSep, "converted", suffix);
 
             if (!file.isAbsolute()) {
-                _outputPath = StringUtils.join(_CurrentDirectory, "\\", _outputPath);
+                _outputPath = StringUtils.join(_CurrentDirectory, fileSep, _outputPath);
             }
 
             file = Paths.get(_outputPath);

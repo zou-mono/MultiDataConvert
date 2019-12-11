@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
 
 /**
  * Created by mono-office on 2017/4/6.
@@ -41,6 +42,8 @@ public class BusSched implements IDataPreprocessing {
     private static String _CharSep;
     private static int _maxThread;
 
+    private static String fileSep = Matcher.quoteReplacement(File.separator);
+
     @Override
     public boolean init(Namespace ns){
         try{
@@ -52,7 +55,7 @@ public class BusSched implements IDataPreprocessing {
 
             file = Paths.get(_input);
             if(!Files.isRegularFile(file)){
-                _input = Files.isDirectory(file) ? _input : StringUtils.join(_CurrentDirectory, "\\", _input);
+                _input = Files.isDirectory(file) ? _input : StringUtils.join(_CurrentDirectory, fileSep, _input);
             }
             file = new File(_input).toPath();
             if (!Files.exists(file)) throw new Exception("Error: input data is not exist!");
@@ -62,7 +65,7 @@ public class BusSched implements IDataPreprocessing {
             if(!Files.isRegularFile(file)){
                 if (!file.isAbsolute()) {
                     _outputName = file.getFileName().toString();
-                    _outputDir = StringUtils.join(_CurrentDirectory, "\\" + _outputName);
+                    _outputDir = StringUtils.join(_CurrentDirectory, fileSep + _outputName);
                 }
             }else{
                 throw new Exception("Error: Parameter output must be a directory.");
@@ -236,7 +239,7 @@ public class BusSched implements IDataPreprocessing {
                     public void run() {
                         Map.Entry entry = (Map.Entry) o;
                         String filename = (String) entry.getKey();
-                        String out_file = _outputDir + "\\" + filename + ".csv";
+                        String out_file = _outputDir + fileSep + filename + ".csv";
                         Writer writer = null; BufferedWriter bw = null;
 
 //                        if(filename.equals("07590_2")){
