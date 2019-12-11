@@ -101,15 +101,32 @@ public class Verb {
     private static void setVerbConvertMetroCard(){
         Subparser verbConvert = _subparsers.addParser("metroCard")
                 .setDefault("func", new MetroCard())
-                .help("将包含二维码的新轨道刷卡数据转换成旧格式.");
+                .help("将二维码轨道刷卡数据转换成旧格式.");
+        verbConvert.addArgument("-n","--new")
+                .help("Input New metrocard data are about to be preprocessed. If it is file, should contain suffix name. ")
+                .required(false);
+        verbConvert.addArgument("-d","--old")
+                .help("Input New metrocard data are about to be preprocessed. If it is file, should contain suffix name. ")
+                .required(false);
+        verbConvert.addArgument("-o","--output")
+                .help("Output file path. The default is in current directory and the name is input file name + \"_converted\".");
+    }
+
+    private static void setVerbConvertTaxi(){
+        Subparser verbConvert = _subparsers.addParser("Taxi")
+                .setDefault("func", new FCD())
+                .help("将2017年四月开始的新格式原始GPS数据转换为仿真二期车速计算输入格式.");
         verbConvert.addArgument("-i","--input")
-                .help("Input data are about to be preprocessed. If it is file, should contain suffix name. Required.")
+                .help("Input data are about to be preprocessed. It can be file or directory.")
                 .required(true);
         verbConvert.addArgument("-n","--maxThread")
                 .help("Set the maximum count of running thread.")
                 .type(int.class)
                 .setDefault(1);
+        verbConvert.addArgument("-l","--lpFile")
+                .help("License plate file to be filtered input files. The default is empty, means not to filter.");
         verbConvert.addArgument("-o","--output")
-                .help("Output file path. The default is in current directory and the name is input file name + \"_converted\".");
+                .help("Output directory to be stored result. The default is in current directory.")
+                .required(true);
     }
 }

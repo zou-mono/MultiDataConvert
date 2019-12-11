@@ -1,12 +1,16 @@
 package com.mono.common;
 
+import org.apache.commons.lang3.StringUtils;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +88,55 @@ public class FileUtils  {
         }
 
         return null;
+    }
+
+    public static String checkFileValid(String input, String currentDirectory){
+        Path file;
+
+        try{
+            file = Paths.get(input);
+            if (!Files.isRegularFile(file)) {
+                input = Files.isDirectory(file) ? input : StringUtils.join(currentDirectory, "\\", input);
+            }
+            file = new File(input).toPath();
+            if (!Files.exists(file))
+                return null;
+
+            return input;
+        }catch(Exception e){
+            return null;
+        }
+    }
+
+    public static boolean mergeFiles(String source, String target){
+        try (FileInputStream is = new FileInputStream(source);
+             FileChannel in = is.getChannel();
+             FileOutputStream os = new FileOutputStream(target, true);
+             FileChannel out = os.getChannel()) {
+
+            long position = 0;
+            long size = in.size() + position;
+            while (0 < size) {
+                long count = in.transferTo(position, size, out);
+                if (count > 0) {
+                    position += count;
+                    size -= count;
+                }
+            }
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+
+    public static String getNoSuffix(String input){
+        Path file = Paths.get(input);
+        String inputName = file.getFileName().toString();
+        if(inputName.lastIndexOf(".") == -1){
+            return inputName;
+        }else{
+            return inputName.substring(0, inputName.lastIndexOf("."));
+        }
     }
 
     public static String completeZero (int dest_digit, int num){

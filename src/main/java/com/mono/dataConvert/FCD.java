@@ -149,6 +149,7 @@ public class FCD implements IDataPreprocessing{
     @Override
     public void DataPreprocessing() {
         boolean bFlag;
+        int ilpCount=1;
 
         try {
             long time1 = System.currentTimeMillis();
@@ -206,6 +207,7 @@ public class FCD implements IDataPreprocessing{
                             pb.Report(finalICount);
                         }
                     });
+                    ilpCount++;
                 }
                 iCount++;
             }
@@ -226,6 +228,7 @@ public class FCD implements IDataPreprocessing{
                     long time2 = System.currentTimeMillis();
                     long interval = time2 - time1;
                     logger.info("All tasks completed! Total cost " + interval / 1000 + "s");
+                    System.out.println(ilpCount);
                     break;
                 }
             }
