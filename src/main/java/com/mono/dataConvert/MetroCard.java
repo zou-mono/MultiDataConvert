@@ -34,7 +34,8 @@ public class MetroCard implements IDataPreprocessing {
     private String _nOutName; //新刷卡数据转换后的文件名称
     private String _oOutName; //旧刷卡数据转换后的文件名称
     private ICsvBeanWriter _CsvWriter; //最终合并的文件
-    private static CsvPreference _csvDelimited; //分隔符
+    private static CsvPreference _rcsvDelimited; //读取分隔符
+    private static CsvPreference _wcsvDelimited; //写入分隔符
 
     private static String fileSep = Matcher.quoteReplacement(File.separator);
 
@@ -50,14 +51,23 @@ public class MetroCard implements IDataPreprocessing {
 
             Properties prop = new Properties();
             prop.load(this.getClass().getResourceAsStream("/fieldOrder.properties"));
-            _tokenizer = String.valueOf(prop.getProperty("metroCard.delimiter"));
+            _tokenizer = String.valueOf(prop.getProperty("metroCard.rdelimiter"));
 
             if (_tokenizer.equals("/t")) {
-                _csvDelimited = new CsvPreference.Builder('"', 9, "\n").build();
+                _rcsvDelimited = new CsvPreference.Builder('"', 9, "\n").build();
             } else if (_tokenizer.equals(",")){
-                _csvDelimited = new CsvPreference.Builder('"', 44, "\n").build();
+                _rcsvDelimited = new CsvPreference.Builder('"', 44, "\n").build();
             } else {
-                _csvDelimited = new CsvPreference.Builder('"', _tokenizer.charAt(0), "\n").build();
+                _rcsvDelimited = new CsvPreference.Builder('"', _tokenizer.charAt(0), "\n").build();
+            }
+
+            _tokenizer = String.valueOf(prop.getProperty("metroCard.wdelimiter"));
+            if (_tokenizer.equals("/t")) {
+                _wcsvDelimited = new CsvPreference.Builder('"', 9, "\n").build();
+            } else if (_tokenizer.equals(",")){
+                _wcsvDelimited = new CsvPreference.Builder('"', 44, "\n").build();
+            } else {
+                _wcsvDelimited = new CsvPreference.Builder('"', _tokenizer.charAt(0), "\n").build();
             }
 
             if(_ninput != null){
@@ -100,7 +110,7 @@ public class MetroCard implements IDataPreprocessing {
             file = Paths.get(_outputPath);
             if (!Files.exists(file)) Files.createFile(file);
 
-            _CsvWriter = new CsvBeanWriter(new OutputStreamWriter(new FileOutputStream(_outputPath), StandardCharsets.UTF_8), _csvDelimited);
+            _CsvWriter = new CsvBeanWriter(new OutputStreamWriter(new FileOutputStream(_outputPath), StandardCharsets.UTF_8), _wcsvDelimited);
 
             logger.info("Initalization completed!");
             return true;
@@ -180,11 +190,11 @@ public class MetroCard implements IDataPreprocessing {
             pb.Start(totolCount, 50);
 
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            beanReader = new CsvBeanReader(reader, _csvDelimited);
+            beanReader = new CsvBeanReader(reader, _rcsvDelimited);
             beanReader.getHeader(true);
 
             nCsvWriter = new CsvBeanWriter(new OutputStreamWriter(
-                    new FileOutputStream(_nOutName, false), StandardCharsets.UTF_8), _csvDelimited);
+                    new FileOutputStream(_nOutName, false), StandardCharsets.UTF_8), _wcsvDelimited);
 
             final String[] inheader = new String[]{"cardID", "tradeType", "inPos", "inTime", "inTerminal", "outPos", "outTime", "outTerminal"};
             final CellProcessor[] inProcessors = MCData.getReadProcessors2();
@@ -249,11 +259,11 @@ public class MetroCard implements IDataPreprocessing {
             pb.Start(totolCount, 50);
 
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            beanReader = new CsvBeanReader(reader, _csvDelimited);
+            beanReader = new CsvBeanReader(reader, _rcsvDelimited);
             beanReader.getHeader(true);
 
             oCsvWriter = new CsvBeanWriter(new OutputStreamWriter(
-                    new FileOutputStream(_oOutName, false), StandardCharsets.UTF_8), _csvDelimited);
+                    new FileOutputStream(_oOutName, false), StandardCharsets.UTF_8), _wcsvDelimited);
 
             final String[] header = new String[]{"cardID", "tradeType", "tradeDate", "terminalID"};
             final CellProcessor[] inProcessors = MCData.getReadProcessors();

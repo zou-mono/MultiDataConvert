@@ -52,7 +52,7 @@ public class FCD implements IDataPreprocessing{
 
     }
 
-    private boolean LoadlpFile() throws Exception {
+    protected boolean LoadlpFile() throws Exception {
         String line;
 
         //得到车牌信息
@@ -157,18 +157,18 @@ public class FCD implements IDataPreprocessing{
         try {
             long time1 = System.currentTimeMillis();
 
-            logger.info("Creating 288 output files...");
-
-            CreateOutputFiles();
-
-            List<File> files = new FileUtils().readlist(_dataDirectory);
-
             logger.info("Loading license plate file...");
 
             if (_lpFile != null)
                 if (!LoadlpFile()) throw new Exception("Load license plate file failed！");
 
             logger.info("Load license plate file completed！");
+
+            logger.info("Creating 288 output files...");
+
+            CreateOutputFiles();
+
+            List<File> files = new FileUtils().readlist(_dataDirectory);
 
             int iCount = 1;
             final ProgressBar pb = new ProgressBar();
@@ -315,7 +315,7 @@ public class FCD implements IDataPreprocessing{
                 }
                 buffer = Convertor(2, temp);
                 //gps.setDirection((short) (buffer.getShort() * 45));
-                gps.setDirection((buffer.getShort()));
+                gps.setDirection(buffer.getShort());
 
                 if (gps.getLongitude() >= -180 && gps.getLongitude() <= 180
                         && gps.getLatitude() >= -90 && gps.getLatitude() <= 90)

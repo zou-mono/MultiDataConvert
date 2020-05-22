@@ -143,10 +143,7 @@ public class BusSched implements IDataPreprocessing {
 //        Charset charset = detector.detect(new BufferedInputStream(new FileInputStream(file)), new Metadata());
 //        Path path = Paths.get(file);
 //        byte[] data = Files.readAllBytes(path);
-        CharsetDetector detector = new CharsetDetector();
-        detector.setText(new BufferedInputStream(new FileInputStream(file)));
-        CharsetMatch match = detector.detect();
-        String encoding = match.getName();
+        String encoding = FileUtils.getFileEncode(file);
         //System.out.println("The Content in " + encoding);
 
         InputStreamReader isr = new InputStreamReader(new FileInputStream(file), encoding);

@@ -1,10 +1,14 @@
 package com.mono.common;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 import org.apache.commons.lang3.StringUtils;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -58,8 +62,24 @@ public class FileUtils  {
         return resultFileName;
     }
 
-    public static String GetFileName(File file){
+    //判断字符串是否包含中文字符
+    public static boolean isContainChinese(String str) {
+        Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
+        Matcher m = p.matcher(str);
+        if (m.find()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static String GetFileName(File file) throws UnsupportedEncodingException {
         String str = file.getName();
+
+        //新出租车车牌URL解码
+        if(!isContainChinese(str)){
+            String encoderString = URLDecoder.decode(str, "GBK");
+            str = encoderString.split("_")[1];
+        }
 
         if (str == null) return null;
 
@@ -204,5 +224,12 @@ public class FileUtils  {
         return  resStr;
     }
 
+    public static String getFileEncode(File file) throws IOException {
+        CharsetDetector detector = new CharsetDetector();
+        detector.setText(new BufferedInputStream(new FileInputStream(file)));
+        CharsetMatch match = detector.detect();
+        String encoding = match.getName();
 
+        return encoding;
+    }
 }

@@ -29,7 +29,7 @@ public class GPS {
     private DateTime Time;
     private short State;
     private int Speed;
-    private short Direction;
+    private int Direction;
     private short valid;
 
     private String source;
@@ -101,11 +101,11 @@ public class GPS {
         Speed = speed;
     }
 
-    public short getDirection() {
+    public int getDirection() {
         return Direction;
     }
 
-    public void setDirection(short direction) {
+    public void setDirection(int direction) {
         Direction = direction;
     }
 
@@ -202,6 +202,8 @@ public class GPS {
         return dt.withZone(DateTimeZone.forID("Asia/Shanghai"));
     }
 
+
+
     public static CellProcessor[] getWriteProcessors() {
         final CellProcessor[] processors = new CellProcessor[] {
                 new Optional(), // ID
@@ -247,7 +249,7 @@ public class GPS {
                 new ParseDateTime(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")), // DateTime
                 new ParseShort(), // state
                 new ParseInt(), // speed
-                new ParseShort(), // direction
+                new ParseInt(), // direction
                 //new IsIncludedIn(new Object[]{"0","1"})  // stayflag
                 //new Optional(new LMinMax(0L,1L))
                 //new LMinMax(0L,1L)
